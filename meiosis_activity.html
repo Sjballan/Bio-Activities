@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🧬 Meiosis & Aneuploidies — Spring Break Lab Challenge</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d1a;
+    --surface: #13132a;
+    --card: #1a1a35;
+    --border: #2a2a50;
+    --accent1: #7c3aed;
+    --accent2: #06b6d4;
+    --accent3: #f59e0b;
+    --accent4: #10b981;
+    --accent5: #f43f5e;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --white: #ffffff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Starfield background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 10% 20%, rgba(124,58,237,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 80% 40%, rgba(6,182,212,0.3) 0%, transparent 100%),
+      radial-gradient(2px 2px at 50% 80%, rgba(245,158,11,0.2) 0%, transparent 100%),
+      radial-gradient(1px 1px at 30% 60%, rgba(16,185,129,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 70% 10%, rgba(244,63,94,0.3) 0%, transparent 100%);
+    background-size: 300px 300px, 250px 250px, 400px 400px, 200px 200px, 350px 350px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  .hero {
+    text-align: center;
+    padding: 48px 0 56px;
+    position: relative;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--accent1), var(--accent2));
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border-radius: 100px;
+    margin-bottom: 20px;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.4rem, 6vw, 4rem);
+    font-weight: 800;
+    line-height: 1.1;
+    background: linear-gradient(135deg, var(--white) 30%, var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 16px;
+  }
+
+  .hero p {
+    font-size: 1.1rem;
+    color: var(--muted);
+    max-width: 560px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  .dna-divider {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 3px;
+    color: var(--border);
+    text-align: center;
+    margin: 0 0 48px;
+    animation: scroll 4s linear infinite;
+  }
+
+  @keyframes scroll {
+    0% { letter-spacing: 3px; color: var(--border); }
+    50% { letter-spacing: 5px; color: var(--accent2); }
+    100% { letter-spacing: 3px; color: var(--border); }
+  }
+
+  /* Activity cards */
+  .activity {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 36px;
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s, transform 0.2s;
+  }
+
+  .activity:hover {
+    transform: translateY(-2px);
+  }
+
+  .activity::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+
+  .activity.purple::before { background: linear-gradient(90deg, var(--accent1), #a855f7); border-color: var(--accent1); }
+  .activity.cyan::before { background: linear-gradient(90deg, var(--accent2), #67e8f9); }
+  .activity.amber::before { background: linear-gradient(90deg, var(--accent3), #fcd34d); }
+  .activity.green::before { background: linear-gradient(90deg, var(--accent4), #6ee7b7); }
+  .activity.rose::before { background: linear-gradient(90deg, var(--accent5), #fb7185); }
+
+  .activity:hover.purple { border-color: var(--accent1); }
+  .activity:hover.cyan { border-color: var(--accent2); }
+  .activity:hover.amber { border-color: var(--accent3); }
+  .activity:hover.green { border-color: var(--accent4); }
+  .activity:hover.rose { border-color: var(--accent5); }
+
+  .activity-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    margin-bottom: 28px;
+  }
+
+  .activity-number {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.8rem;
+    font-weight: 800;
+    line-height: 1;
+    min-width: 52px;
+  }
+  .purple .activity-number { color: var(--accent1); }
+  .cyan .activity-number { color: var(--accent2); }
+  .amber .activity-number { color: var(--accent3); }
+  .green .activity-number { color: var(--accent4); }
+  .rose .activity-number { color: var(--accent5); }
+
+  .activity-meta { flex: 1; }
+  .activity-meta h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 4px;
+  }
+
+  .tag-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+
+  .tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 6px;
+    border: 1px solid;
+  }
+  .purple .tag { color: #a855f7; border-color: #a855f740; background: #a855f710; }
+  .cyan .tag { color: var(--accent2); border-color: #06b6d440; background: #06b6d410; }
+  .amber .tag { color: var(--accent3); border-color: #f59e0b40; background: #f59e0b10; }
+  .green .tag { color: var(--accent4); border-color: #10b98140; background: #10b98110; }
+  .rose .tag { color: var(--accent5); border-color: #f43f5e40; background: #f43f5e10; }
+
+  /* Section labels */
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    margin-top: 24px;
+  }
+  .purple .section-label { color: #a855f7; }
+  .cyan .section-label { color: var(--accent2); }
+  .amber .section-label { color: var(--accent3); }
+  .green .section-label { color: var(--accent4); }
+  .rose .section-label { color: var(--accent5); }
+
+  p, li { font-size: 0.97rem; color: var(--text); line-height: 1.75; }
+  ul, ol { padding-left: 1.4em; }
+  li { margin-bottom: 6px; }
+  strong { color: var(--white); font-weight: 500; }
+
+  /* Quiz styles */
+  .quiz-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .q-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+  }
+
+  .q-number {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .q-text { font-size: 0.9rem; margin-bottom: 12px; color: var(--text); }
+
+  .choices { display: flex; flex-direction: column; gap: 6px; }
+
+  .choice {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    cursor: pointer;
+    transition: all 0.15s;
+    color: var(--text);
+  }
+
+  .choice:hover { border-color: var(--accent2); background: #06b6d410; }
+  .choice.correct { border-color: var(--accent4) !important; background: #10b98120 !important; color: var(--white); }
+  .choice.wrong { border-color: var(--accent5) !important; background: #f43f5e15 !important; opacity: 0.6; }
+
+  .choice-letter {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    min-width: 18px;
+    text-align: center;
+  }
+
+  .feedback {
+    margin-top: 10px;
+    font-size: 0.8rem;
+    font-family: 'DM Mono', monospace;
+    display: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+  }
+  .feedback.show { display: block; }
+  .feedback.ok { background: #10b98115; color: var(--accent4); border: 1px solid #10b98130; }
+  .feedback.no { background: #f43f5e10; color: var(--accent5); border: 1px solid #f43f5e30; }
+
+  /* Matching game */
+  .match-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 16px;
+  }
+
+  .match-col-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+
+  .match-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    user-select: none;
+  }
+
+  .match-item:hover { border-color: var(--accent3); background: #f59e0b08; }
+  .match-item.selected { border-color: var(--accent3); background: #f59e0b15; color: var(--white); }
+  .match-item.matched { border-color: var(--accent4); background: #10b98115; color: var(--accent4); cursor: default; }
+  .match-item.wrong-flash { border-color: var(--accent5); background: #f43f5e15; animation: shake 0.3s; }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+  }
+
+  .match-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    flex-shrink: 0;
+    transition: background 0.2s;
+  }
+  .selected .match-dot { background: var(--accent3); }
+  .matched .match-dot { background: var(--accent4); }
+
+  .match-score {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 12px;
+  }
+
+  /* Scenario cards */
+  .scenario-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .scenario-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .scenario-card:hover { border-color: var(--accent4); transform: translateY(-2px); }
+
+  .scenario-karyotype {
+    font-family: 'DM Mono', monospace;
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: var(--accent4);
+    margin-bottom: 8px;
+  }
+
+  .scenario-clues { font-size: 0.82rem; color: var(--muted); line-height: 1.5; margin-bottom: 12px; }
+
+  .scenario-reveal {
+    display: none;
+    font-size: 0.82rem;
+    border-top: 1px solid var(--border);
+    padding-top: 10px;
+    margin-top: 4px;
+  }
+
+  .scenario-reveal.show { display: block; }
+  .condition-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--white);
+    margin-bottom: 4px;
+  }
+
+  .reveal-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 6px 12px;
+    border-radius: 8px;
+    background: transparent;
+    border: 1px solid var(--accent4);
+    color: var(--accent4);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .reveal-btn:hover { background: #10b98115; }
+
+  /* Meiosis diagram ordering */
+  .stage-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .stage-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 10px;
+    text-align: center;
+    cursor: grab;
+    transition: all 0.15s;
+    user-select: none;
+  }
+
+  .stage-card:hover { border-color: var(--accent1); background: #7c3aed10; }
+  .stage-card.dragging { opacity: 0.4; transform: scale(0.95); }
+  .stage-card.drag-over { border-color: var(--accent2); background: #06b6d415; }
+
+  .stage-icon { font-size: 1.8rem; margin-bottom: 8px; }
+  .stage-name { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--accent1); margin-bottom: 6px; }
+  .stage-desc { font-size: 0.75rem; color: var(--muted); line-height: 1.4; }
+
+  .check-order-btn {
+    margin-top: 16px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 10px 24px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--accent1), #a855f7);
+    border: none;
+    color: white;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .check-order-btn:hover { opacity: 0.85; }
+
+  .order-result {
+    margin-top: 12px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    display: none;
+  }
+  .order-result.show { display: block; }
+  .order-result.win { background: #10b98115; color: var(--accent4); border: 1px solid #10b98130; }
+  .order-result.lose { background: #f43f5e10; color: var(--accent5); border: 1px solid #f43f5e30; }
+
+  /* Nondisjunction builder */
+  .cell-diagram {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    margin-top: 16px;
+  }
+
+  .cell-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  .cell {
+    background: var(--bg);
+    border: 2px solid var(--border);
+    border-radius: 50%;
+    width: 90px; height: 90px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    text-align: center;
+    line-height: 1.3;
+    transition: border-color 0.3s;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .cell.normal { border-color: var(--accent2); }
+  .cell.error { border-color: var(--accent5); animation: pulse-red 1s ease-in-out infinite; }
+  .cell.ok { border-color: var(--accent4); }
+
+  @keyframes pulse-red {
+    0%, 100% { border-color: var(--accent5); box-shadow: 0 0 0 0 #f43f5e30; }
+    50% { border-color: #fb7185; box-shadow: 0 0 0 6px #f43f5e00; }
+  }
+
+  .cell-label {
+    font-size: 1.1rem;
+    margin-bottom: 4px;
+  }
+
+  .arrow-label {
+    font-size: 0.7rem;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    text-align: center;
+  }
+
+  .nondisj-controls {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+  }
+
+  .ndj-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 8px 14px;
+    border-radius: 8px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .ndj-btn:hover, .ndj-btn.active {
+    border-color: var(--accent2);
+    color: var(--accent2);
+    background: #06b6d410;
+  }
+
+  .ndj-result {
+    margin-top: 16px;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    padding: 14px 18px;
+    background: var(--bg);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    display: none;
+  }
+  .ndj-result.show { display: block; }
+
+  /* Score bar */
+  .score-bar {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 28px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+
+  .score-item { text-align: center; }
+  .score-val {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 800;
+  }
+  .score-val.q { color: var(--accent2); }
+  .score-val.m { color: var(--accent3); }
+  .score-val.s { color: var(--accent4); }
+
+  .score-lbl {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .divider { width: 1px; height: 40px; background: var(--border); }
+
+  @media (max-width: 640px) {
+    .quiz-grid, .match-wrap, .scenario-grid, .stage-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-badge">🧬 Spring Break Challenge</div>
+    <h1>Meiosis & Chromosomal Aneuploidies</h1>
+    <p>Four activities to test what you know before you hit the beach. Good luck — you'll need it. 🏖️</p>
+  </div>
+
+  <!-- Name entry -->
+  <div style="display:flex; justify-content:center; margin-bottom: 32px; gap:10px; flex-wrap:wrap;">
+    <input id="group-name" type="text" placeholder="Enter your group name / names..." maxlength="60"
+      style="font-family:'DM Mono',monospace; font-size:13px; background:var(--card); border:1px solid var(--border);
+      color:var(--white); border-radius:10px; padding:10px 18px; width:320px; outline:none; letter-spacing:0.5px;"
+      oninput="document.getElementById('name-display').textContent = this.value || '—'"
+    />
+    <div style="font-family:'DM Mono',monospace; font-size:11px; color:var(--muted); align-self:center; letter-spacing:1px;">← enter before you start</div>
+  </div>
+
+  <div class="dna-divider">· · · A — T · · · G — C · · · A — T · · · C — G · · ·</div>
+
+  <!-- Score bar -->
+  <div class="score-bar">
+    <div class="score-item">
+      <div class="score-val q" id="quiz-score">0/8</div>
+      <div class="score-lbl">Quiz Score</div>
+    </div>
+    <div class="divider"></div>
+    <div class="score-item">
+      <div class="score-val m" id="match-score-display">0/7</div>
+      <div class="score-lbl">Matches</div>
+    </div>
+    <div class="divider"></div>
+    <div class="score-item">
+      <div class="score-val s" id="scenario-score">0/5</div>
+      <div class="score-lbl">Cases Solved</div>
+    </div>
+    <div style="flex:1"></div>
+    <div style="font-family:'DM Mono',monospace; font-size:11px; color:var(--muted); letter-spacing:1px; text-transform:uppercase;">Work in groups of 2–3</div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────────── -->
+  <!-- ACTIVITY 1: Meiosis Drag & Order -->
+  <!-- ─────────────────────────────────────────────────── -->
+  <div class="activity purple">
+    <div class="activity-header">
+      <div class="activity-number">01</div>
+      <div class="activity-meta">
+        <h2>Sequence the Stages 🔀</h2>
+        <p style="color:var(--muted); font-size:0.9rem;">Drag the cards into the correct order of meiosis.</p>
+        <div class="tag-row">
+          <span class="tag">Meiosis I & II</span>
+          <span class="tag">~8 min</span>
+          <span class="tag">Whole class</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label">Drag to reorder →</div>
+    <div class="stage-grid" id="stage-grid">
+      <div class="stage-card" draggable="true" data-stage="prophase1">
+        <div class="stage-icon">🧶</div>
+        <div class="stage-name">Prophase I</div>
+        <div class="stage-desc">Chromosomes condense; homologs pair up; crossing over occurs</div>
+      </div>
+      <div class="stage-card" draggable="true" data-stage="metaphase2">
+        <div class="stage-icon">📏</div>
+        <div class="stage-name">Metaphase II</div>
+        <div class="stage-desc">Sister chromatids align at metaphase plate</div>
+      </div>
+      <div class="stage-card" draggable="true" data-stage="anaphase1">
+        <div class="stage-icon">↔️</div>
+        <div class="stage-name">Anaphase I</div>
+        <div class="stage-desc">Homologous chromosomes separate to opposite poles</div>
+      </div>
+      <div class="stage-card" draggable="true" data-stage="telophase2">
+        <div class="stage-icon">🟢</div>
+        <div class="stage-name">Telophase II</div>
+        <div class="stage-desc">Four haploid cells form — meiosis complete!</div>
+      </div>
+      <div class="stage-card" draggable="true" data-stage="metaphase1">
+        <div class="stage-icon">⚖️</div>
+        <div class="stage-name">Metaphase I</div>
+        <div class="stage-desc">Bivalents align at cell equator; independent assortment set up</div>
+      </div>
+      <div class="stage-card" draggable="true" data-stage="anaphase2">
+        <div class="stage-icon">🔀</div>
+        <div class="stage-name">Anaphase II</div>
+        <div class="stage-desc">Sister chromatids pulled apart to opposite poles</div>
+      </div>
+      <div class="stage-card" draggable="true" data-stage="telophase1">
+        <div class="stage-icon">✂️</div>
+        <div class="stage-name">Telophase I</div>
+        <div class="stage-desc">Two haploid cells form; each still has 2 sister chromatids</div>
+      </div>
+      <div class="stage-card" draggable="true" data-stage="prophase2">
+        <div class="stage-icon">🌀</div>
+        <div class="stage-name">Prophase II</div>
+        <div class="stage-desc">New spindle forms; no further DNA replication</div>
+      </div>
+    </div>
+    <button class="check-order-btn" onclick="checkOrder()">✓ Check My Order</button>
+    <div class="order-result" id="order-result"></div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────────── -->
+  <!-- ACTIVITY 2: Matching game -->
+  <!-- ─────────────────────────────────────────────────── -->
+  <div class="activity amber">
+    <div class="activity-header">
+      <div class="activity-number">02</div>
+      <div class="activity-meta">
+        <h2>Match the Condition 🎯</h2>
+        <p style="color:var(--muted); font-size:0.9rem;">Click one item from each column to make a match. Connect each karyotype to its condition and key feature.</p>
+        <div class="tag-row">
+          <span class="tag">Aneuploidies</span>
+          <span class="tag">~8 min</span>
+          <span class="tag">Pairs</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="match-wrap">
+      <div>
+        <div class="match-col-label">Karyotype</div>
+        <div class="match-item" data-group="karyotype" data-id="t21" onclick="matchClick(this)">
+          <div class="match-dot"></div>47, +21
+        </div>
+        <div class="match-item" data-group="karyotype" data-id="turner" onclick="matchClick(this)">
+          <div class="match-dot"></div>45, X
+        </div>
+        <div class="match-item" data-group="karyotype" data-id="kline" onclick="matchClick(this)">
+          <div class="match-dot"></div>47, XXY
+        </div>
+        <div class="match-item" data-group="karyotype" data-id="jacob" onclick="matchClick(this)">
+          <div class="match-dot"></div>47, XYY
+        </div>
+        <div class="match-item" data-group="karyotype" data-id="triple" onclick="matchClick(this)">
+          <div class="match-dot"></div>47, XXX
+        </div>
+      </div>
+      <div>
+        <div class="match-col-label">Condition + Key Feature</div>
+        <div class="match-item" data-group="condition" data-id="kline" onclick="matchClick(this)">
+          <div class="match-dot"></div>Klinefelter — testicular dysgenesis, tall stature
+        </div>
+        <div class="match-item" data-group="condition" data-id="triple" onclick="matchClick(this)">
+          <div class="match-dot"></div>Triple X — usually asymptomatic, fertile females
+        </div>
+        <div class="match-item" data-group="condition" data-id="t21" onclick="matchClick(this)">
+          <div class="match-dot"></div>Trisomy 21 — most common live-born trisomy, Barr body absent
+        </div>
+        <div class="match-item" data-group="condition" data-id="turner" onclick="matchClick(this)">
+          <div class="match-dot"></div>Turner — short stature, ovarian streak, webbed neck
+        </div>
+        <div class="match-item" data-group="condition" data-id="jacob" onclick="matchClick(this)">
+          <div class="match-dot"></div>Jacob — tall males, often undiagnosed, extra Y
+        </div>
+      </div>
+    </div>
+    <div class="match-score" id="match-score-text">Matches: 0 / 5</div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────────── -->
+  <!-- ACTIVITY 3: Case Study Identification -->
+  <!-- ─────────────────────────────────────────────────── -->
+  <div class="activity green">
+    <div class="activity-header">
+      <div class="activity-number">03</div>
+      <div class="activity-meta">
+        <h2>Diagnose the Case 🩺</h2>
+        <p style="color:var(--muted); font-size:0.9rem;">Read the clues, then click "Reveal" to check your diagnosis. Discuss with your group before revealing!</p>
+        <div class="tag-row">
+          <span class="tag">Clinical Application</span>
+          <span class="tag">~10 min</span>
+          <span class="tag">Groups of 3</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label">Click Reveal after your group agrees →</div>
+    <div class="scenario-grid">
+
+      <div class="scenario-card" id="case1">
+        <div class="scenario-karyotype">Case A</div>
+        <div class="scenario-clues">
+          A newborn presents with hypotonia, upslanting palpebral fissures, a single palmar crease, and a small head. Maternal age was 42. Chromosome analysis shows 47 chromosomes.
+        </div>
+        <button class="reveal-btn" onclick="revealCase('case1', this)">▶ Reveal</button>
+        <div class="scenario-reveal" id="reveal-case1">
+          <div class="condition-name">Trisomy 21 — Down Syndrome</div>
+          <p style="font-size:0.8rem; color:var(--muted);">Extra chromosome 21, typically from <strong>nondisjunction in Meiosis I</strong> of the egg. Risk increases with advanced maternal age. FISH or karyotype confirms.</p>
+        </div>
+      </div>
+
+      <div class="scenario-card" id="case2">
+        <div class="scenario-karyotype">Case B</div>
+        <div class="scenario-clues">
+          A 16-year-old is referred for primary amenorrhea. She is short (4'8"), has a webbed neck, low posterior hairline, and widely spaced nipples. Ultrasound shows streak gonads.
+        </div>
+        <button class="reveal-btn" onclick="revealCase('case2', this)">▶ Reveal</button>
+        <div class="scenario-reveal" id="reveal-case2">
+          <div class="condition-name">Turner Syndrome — 45, X</div>
+          <p style="font-size:0.8rem; color:var(--muted);">Loss of one X chromosome, often paternal in origin. Most common cause: <strong>nondisjunction during spermatogenesis</strong>. Estrogen replacement and growth hormone typically recommended.</p>
+        </div>
+      </div>
+
+      <div class="scenario-card" id="case3">
+        <div class="scenario-karyotype">Case C</div>
+        <div class="scenario-clues">
+          A 20-year-old male is evaluated for infertility. He is tall (6'3"), has small testes, gynecomastia, and reduced facial hair. Testosterone is low; FSH and LH are elevated.
+        </div>
+        <button class="reveal-btn" onclick="revealCase('case3', this)">▶ Reveal</button>
+        <div class="scenario-reveal" id="reveal-case3">
+          <div class="condition-name">Klinefelter Syndrome — 47, XXY</div>
+          <p style="font-size:0.8rem; color:var(--muted);">Extra X chromosome in a male (46+1). Arises from <strong>nondisjunction in either parent</strong>. Seminiferous tubule dysgenesis leads to azoospermia. One Barr body is present.</p>
+        </div>
+      </div>
+
+      <div class="scenario-card" id="case4">
+        <div class="scenario-karyotype">Case D</div>
+        <div class="scenario-clues">
+          A 19-year-old male is incidentally found to have a 47,XYY karyotype during a workup for severe acne and tall stature (6'4"). He is fertile and otherwise healthy.
+        </div>
+        <button class="reveal-btn" onclick="revealCase('case4', this)">▶ Reveal</button>
+        <div class="scenario-reveal" id="reveal-case4">
+          <div class="condition-name">Jacob Syndrome — 47, XYY</div>
+          <p style="font-size:0.8rem; color:var(--muted);">Extra Y results from <strong>nondisjunction in Meiosis II of spermatogenesis</strong> (paternal only). Often undiagnosed. Normal fertility. Historical behavioral associations are not supported by current evidence.</p>
+        </div>
+      </div>
+
+      <div class="scenario-card" id="case5">
+        <div class="scenario-karyotype">Case E</div>
+        <div class="scenario-clues">
+          A 25-year-old woman presents with mild learning difficulties and menstrual irregularity. Karyotype reveals 47,XXX. She has no dysmorphic features and is otherwise healthy.
+        </div>
+        <button class="reveal-btn" onclick="revealCase('case5', this)">▶ Reveal</button>
+        <div class="scenario-reveal" id="reveal-case5">
+          <div class="condition-name">Triple X Syndrome — 47, XXX</div>
+          <p style="font-size:0.8rem; color:var(--muted);">Extra X from <strong>maternal nondisjunction</strong>. Two Barr bodies present. Most females are fertile; phenotype is highly variable and often mild. Occurs in ~1/1000 females.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────────── -->
+  <!-- ACTIVITY 4: Rapid-Fire Quiz -->
+  <!-- ─────────────────────────────────────────────────── -->
+  <div class="activity cyan">
+    <div class="activity-header">
+      <div class="activity-number">04</div>
+      <div class="activity-meta">
+        <h2>Rapid-Fire Quiz ⚡</h2>
+        <p style="color:var(--muted); font-size:0.9rem;">Click your answer — instant feedback. First group to get all 8 wins.</p>
+        <div class="tag-row">
+          <span class="tag">Consolidation</span>
+          <span class="tag">~10 min</span>
+          <span class="tag">Speed round</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="quiz-grid" id="quiz-container">
+
+      <!-- Q1 -->
+      <div class="q-item">
+        <div class="q-number">Question 01</div>
+        <div class="q-text">During which phase of Meiosis I does crossing over (recombination) occur?</div>
+        <div class="choices">
+          <div class="choice" onclick="answer(this,'wrong','Homologs separate in Anaphase I, not recombine.')"><span class="choice-letter">A</span>Anaphase I</div>
+          <div class="choice" onclick="answer(this,'correct','✓ Correct! Crossing over occurs at the chiasmata during Prophase I.')"><span class="choice-letter">B</span>Prophase I</div>
+          <div class="choice" onclick="answer(this,'wrong','Metaphase I aligns bivalents but crossing over already happened.')"><span class="choice-letter">C</span>Metaphase I</div>
+          <div class="choice" onclick="answer(this,'wrong','Telophase I occurs after separation.')"><span class="choice-letter">D</span>Telophase I</div>
+        </div>
+        <div class="feedback" id="fb0"></div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="q-item">
+        <div class="q-number">Question 02</div>
+        <div class="q-text">A cell with 46 chromosomes undergoes meiosis. How many chromosomes will each daughter cell contain at the end of Meiosis II?</div>
+        <div class="choices">
+          <div class="choice" onclick="answer(this,'wrong','46 is the diploid number — meiosis halves it.')"><span class="choice-letter">A</span>46</div>
+          <div class="choice" onclick="answer(this,'wrong','Close, but 24 would be odd for humans.')"><span class="choice-letter">B</span>24</div>
+          <div class="choice" onclick="answer(this,'correct','✓ Correct! Meiosis produces haploid cells with 23 chromosomes in humans.')"><span class="choice-letter">C</span>23</div>
+          <div class="choice" onclick="answer(this,'wrong','12 would be quarter the normal number.')"><span class="choice-letter">D</span>12</div>
+        </div>
+        <div class="feedback" id="fb1"></div>
+      </div>
+
+      <!-- Q3 -->
+      <div class="q-item">
+        <div class="q-number">Question 03</div>
+        <div class="q-text">Nondisjunction of chromosome 21 during Meiosis I in the mother will produce eggs with how many copies of chromosome 21?</div>
+        <div class="choices">
+          <div class="choice" onclick="answer(this,'wrong','Zero copies is possible but not the typical result of Meiosis I nondisjunction.')"><span class="choice-letter">A</span>0 and 1</div>
+          <div class="choice" onclick="answer(this,'correct','✓ Right! Meiosis I nondisjunction produces cells with 2 and 0 copies. When fertilized by normal sperm, this gives trisomy or monosomy.')"><span class="choice-letter">B</span>2 and 0</div>
+          <div class="choice" onclick="answer(this,'wrong','Three copies in one egg would require more than one error.')"><span class="choice-letter">C</span>3 and 1</div>
+          <div class="choice" onclick="answer(this,'wrong','1 and 1 is normal — no nondisjunction.')"><span class="choice-letter">D</span>1 and 1</div>
+        </div>
+        <div class="feedback" id="fb2"></div>
+      </div>
+
+      <!-- Q4 -->
+      <div class="q-item">
+        <div class="q-number">Question 04</div>
+        <div class="q-text">Which aneuploidy can ONLY arise through paternal nondisjunction?</div>
+        <div class="choices">
+          <div class="choice" onclick="answer(this,'wrong','Turner syndrome usually arises from paternal nondisjunction, but can also arise maternally.')"><span class="choice-letter">A</span>Turner syndrome (45, X)</div>
+          <div class="choice" onclick="answer(this,'wrong','Trisomy 21 can arise from either parent.')"><span class="choice-letter">B</span>Trisomy 21</div>
+          <div class="choice" onclick="answer(this,'correct','✓ Correct! Jacob syndrome (47, XYY) can ONLY arise from nondisjunction of the Y chromosome during spermatogenesis.')"><span class="choice-letter">C</span>Jacob syndrome (47, XYY)</div>
+          <div class="choice" onclick="answer(this,'wrong','Triple X arises maternally.')"><span class="choice-letter">D</span>Triple X (47, XXX)</div>
+        </div>
+        <div class="feedback" id="fb3"></div>
+      </div>
+
+      <!-- Q5 -->
+      <div class="q-item">
+        <div class="q-number">Question 05</div>
+        <div class="q-text">How many Barr bodies would you expect in a cell from a person with Klinefelter syndrome (47, XXY)?</div>
+        <div class="choices">
+          <div class="choice" onclick="answer(this,'wrong','Zero Barr bodies means no inactivated X.')"><span class="choice-letter">A</span>0</div>
+          <div class="choice" onclick="answer(this,'correct','✓ Correct! Barr bodies = number of X chromosomes − 1. XXY has 2 X chromosomes, so 1 Barr body.')"><span class="choice-letter">B</span>1</div>
+          <div class="choice" onclick="answer(this,'wrong','2 Barr bodies would mean 3 X chromosomes (e.g., XXX).')"><span class="choice-letter">C</span>2</div>
+          <div class="choice" onclick="answer(this,'wrong','3 Barr bodies would mean 4 X chromosomes.')"><span class="choice-letter">D</span>3</div>
+        </div>
+        <div class="feedback" id="fb4"></div>
+      </div>
+
+      <!-- Q6 -->
+      <div class="q-item">
+        <div class="q-number">Question 06</div>
+        <div class="q-text">Which statement about independent assortment in Meiosis I is TRUE?</div>
+        <div class="choices">
+          <div class="choice" onclick="answer(this,'wrong','Independent assortment concerns homologs, not sister chromatids.')"><span class="choice-letter">A</span>It separates sister chromatids randomly</div>
+          <div class="choice" onclick="answer(this,'wrong','Independent assortment is separate from crossing over.')"><span class="choice-letter">B</span>It is the same process as crossing over</div>
+          <div class="choice" onclick="answer(this,'correct','✓ Correct! Each homologous pair lines up at the metaphase plate randomly, so either chromosome of each pair can go to either pole.')"><span class="choice-letter">C</span>Each homologous pair orients randomly at Metaphase I</div>
+          <div class="choice" onclick="answer(this,'wrong','Independent assortment applies to all chromosome pairs, not just autosomes.')"><span class="choice-letter">D</span>It only applies to autosomes, not sex chromosomes</div>
+        </div>
+        <div class="feedback" id="fb5"></div>
+      </div>
+
+      <!-- Q7 -->
+      <div class="q-item">
+        <div class="q-number">Question 07</div>
+        <div class="q-text">Turner syndrome (45, X) is associated with which cardiovascular defect?</div>
+        <div class="choices">
+          <div class="choice" onclick="answer(this,'wrong','Tetralogy of Fallot is associated with Down syndrome.')"><span class="choice-letter">A</span>Tetralogy of Fallot</div>
+          <div class="choice" onclick="answer(this,'correct','✓ Right! Bicuspid aortic valve and coarctation of the aorta are the most common cardiac defects in Turner syndrome.')"><span class="choice-letter">B</span>Bicuspid aortic valve / coarctation of the aorta</div>
+          <div class="choice" onclick="answer(this,'wrong','ASD is less specifically linked to Turner syndrome.')"><span class="choice-letter">C</span>Atrial septal defect</div>
+          <div class="choice" onclick="answer(this,'wrong','Patent ductus arteriosus is not specifically linked to Turner syndrome.')"><span class="choice-letter">D</span>Patent ductus arteriosus</div>
+        </div>
+        <div class="feedback" id="fb6"></div>
+      </div>
+
+      <!-- Q8 -->
+      <div class="q-item">
+        <div class="q-number">Question 08</div>
+        <div class="q-text">Which of the following correctly describes why trisomy 21 risk increases with maternal age?</div>
+        <div class="choices">
+          <div class="choice" onclick="answer(this,'wrong','Oocytes are arrested in Prophase I for decades — DNA repair is not the main mechanism.')"><span class="choice-letter">A</span>Older oocytes have more DNA damage</div>
+          <div class="choice" onclick="answer(this,'correct','✓ Correct! Primary oocytes arrest in Prophase I for decades. Cohesin holding homologs together degrades over time, making nondisjunction more likely in older women.')"><span class="choice-letter">B</span>Cohesin degradation over decades increases nondisjunction risk</div>
+          <div class="choice" onclick="answer(this,'wrong','Spindle checkpoint loss is a proposed factor but cohesin is the leading explanation.')"><span class="choice-letter">C</span>Maternal age reduces spindle checkpoint efficiency only</div>
+          <div class="choice" onclick="answer(this,'wrong','All primary oocytes formed before birth; new oocytes are not made with age.')"><span class="choice-letter">D</span>Older women produce more oocytes, increasing error chance</div>
+        </div>
+        <div class="feedback" id="fb7"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────────── -->
+  <!-- ACTIVITY 5: Discussion Prompts -->
+  <!-- ─────────────────────────────────────────────────── -->
+  <div class="activity rose">
+    <div class="activity-header">
+      <div class="activity-number">05</div>
+      <div class="activity-meta">
+        <h2>Big Picture Discussion 💬</h2>
+        <p style="color:var(--muted); font-size:0.9rem;">No wrong answers — think critically and discuss with your group.</p>
+        <div class="tag-row">
+          <span class="tag">Critical Thinking</span>
+          <span class="tag">~8 min</span>
+          <span class="tag">Open discussion</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label">Prompts — pick at least two, jot your key points below</div>
+    <ol style="margin-top:12px;">
+      <li style="margin-bottom:14px;"><strong>Why does meiosis, not mitosis, generate chromosomal aneuploidies in gametes?</strong> What specific safeguards in meiosis can fail?</li>
+      <li style="margin-bottom:14px;"><strong>Jacob syndrome (47, XYY) is often called "benign."</strong> What ethical issues arise when we label an aneuploidy as benign vs. severe? Who benefits from prenatal testing in this case?</li>
+      <li style="margin-bottom:14px;"><strong>Down syndrome is the most common viable trisomy.</strong> Why do you think trisomy 21 is survivable when most other autosomal trisomies are lethal? What is special about chromosome 21?</li>
+      <li style="margin-bottom:14px;"><strong>Triple X syndrome often goes undiagnosed for life.</strong> Should it be included in routine newborn screening panels? Argue for or against.</li>
+      <li style="margin-bottom:14px;"><strong>Maternal age is a well-known risk factor for trisomy 21.</strong> If you were a genetic counselor, how would you explain this risk to a 38-year-old patient considering pregnancy? What information would you prioritize?</li>
+    </ol>
+
+    <div class="section-label" style="margin-top:20px;">Your group's notes (pick any 2 prompts)</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:10px;">
+      <div>
+        <div style="font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); margin-bottom:6px; letter-spacing:1px;">PROMPT #<input id="prompt1-num" type="number" min="1" max="5" placeholder="?" style="width:36px; background:transparent; border:none; border-bottom:1px solid var(--border); color:var(--accent5); font-family:'DM Mono',monospace; font-size:10px; outline:none; text-align:center;"></div>
+        <textarea id="disc1" placeholder="Write your group's key points here..." rows="4"
+          style="width:100%; background:var(--bg); border:1px solid var(--border); border-radius:10px; color:var(--text);
+          font-family:'DM Sans',sans-serif; font-size:0.85rem; padding:12px; resize:vertical; outline:none; line-height:1.6;"></textarea>
+      </div>
+      <div>
+        <div style="font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); margin-bottom:6px; letter-spacing:1px;">PROMPT #<input id="prompt2-num" type="number" min="1" max="5" placeholder="?" style="width:36px; background:transparent; border:none; border-bottom:1px solid var(--border); color:var(--accent5); font-family:'DM Mono',monospace; font-size:10px; outline:none; text-align:center;"></div>
+        <textarea id="disc2" placeholder="Write your group's key points here..." rows="4"
+          style="width:100%; background:var(--bg); border:1px solid var(--border); border-radius:10px; color:var(--text);
+          font-family:'DM Sans',sans-serif; font-size:0.85rem; padding:12px; resize:vertical; outline:none; line-height:1.6;"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULTS BUTTON -->
+  <div style="text-align:center; padding: 24px 0 12px;">
+    <button onclick="showResults()"
+      style="font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:700; padding:16px 48px;
+      border-radius:14px; background:linear-gradient(135deg,#7c3aed,#06b6d4); border:none; color:white;
+      cursor:pointer; letter-spacing:1px; transition:opacity 0.2s; box-shadow: 0 0 40px #7c3aed40;"
+      onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+      🎓 Generate Results Card
+    </button>
+    <div style="font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); margin-top:10px; letter-spacing:1px;">SHOW THIS SCREEN TO YOUR INSTRUCTOR</div>
+  </div>
+
+  <!-- RESULTS MODAL -->
+  <div id="results-modal" style="display:none; position:fixed; inset:0; background:#000000cc; z-index:100; overflow-y:auto; padding:40px 20px;">
+    <div id="results-card" style="max-width:620px; margin:0 auto; background:#0f0f22; border:1px solid #3a3a60; border-radius:24px; padding:40px; position:relative;">
+
+      <div style="text-align:center; margin-bottom:32px;">
+        <div style="font-family:'DM Mono',monospace; font-size:10px; letter-spacing:3px; color:#06b6d4; margin-bottom:10px; text-transform:uppercase;">Results Card</div>
+        <div style="font-family:'Syne',sans-serif; font-size:1.8rem; font-weight:800; color:white;" id="name-display">—</div>
+        <div style="font-family:'DM Mono',monospace; font-size:11px; color:#64748b; margin-top:6px;" id="results-timestamp"></div>
+      </div>
+
+      <!-- Score grid -->
+      <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:28px;">
+        <div style="background:#1a1a35; border:1px solid #2a2a50; border-radius:14px; padding:18px; text-align:center;">
+          <div style="font-family:'DM Mono',monospace; font-size:10px; letter-spacing:2px; color:#94a3b8; margin-bottom:8px; text-transform:uppercase;">Sequence</div>
+          <div id="res-order" style="font-family:'Syne',sans-serif; font-size:1.6rem; font-weight:800; color:#7c3aed;">—</div>
+        </div>
+        <div style="background:#1a1a35; border:1px solid #2a2a50; border-radius:14px; padding:18px; text-align:center;">
+          <div style="font-family:'DM Mono',monospace; font-size:10px; letter-spacing:2px; color:#94a3b8; margin-bottom:8px; text-transform:uppercase;">Quiz</div>
+          <div id="res-quiz" style="font-family:'Syne',sans-serif; font-size:1.6rem; font-weight:800; color:#06b6d4;">—</div>
+        </div>
+        <div style="background:#1a1a35; border:1px solid #2a2a50; border-radius:14px; padding:18px; text-align:center;">
+          <div style="font-family:'DM Mono',monospace; font-size:10px; letter-spacing:2px; color:#94a3b8; margin-bottom:8px; text-transform:uppercase;">Cases</div>
+          <div id="res-cases" style="font-family:'Syne',sans-serif; font-size:1.6rem; font-weight:800; color:#10b981;">—</div>
+        </div>
+      </div>
+
+      <!-- Matching -->
+      <div style="background:#1a1a35; border:1px solid #2a2a50; border-radius:14px; padding:16px 20px; margin-bottom:14px;">
+        <div style="font-family:'DM Mono',monospace; font-size:10px; letter-spacing:2px; color:#94a3b8; margin-bottom:8px; text-transform:uppercase;">Matching Game</div>
+        <div id="res-match" style="font-family:'Syne',sans-serif; font-size:1.3rem; font-weight:700; color:#f59e0b;">—</div>
+      </div>
+
+      <!-- Discussion -->
+      <div style="background:#1a1a35; border:1px solid #2a2a50; border-radius:14px; padding:18px 20px; margin-bottom:28px;">
+        <div style="font-family:'DM Mono',monospace; font-size:10px; letter-spacing:2px; color:#94a3b8; margin-bottom:14px; text-transform:uppercase;">Discussion Responses</div>
+        <div id="res-disc1" style="margin-bottom:14px;"></div>
+        <div id="res-disc2"></div>
+      </div>
+
+      <!-- Buttons -->
+      <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+        <button onclick="window.print()"
+          style="font-family:'DM Mono',monospace; font-size:11px; letter-spacing:1px; text-transform:uppercase;
+          padding:10px 24px; border-radius:10px; background:linear-gradient(135deg,#7c3aed,#06b6d4);
+          border:none; color:white; cursor:pointer;">🖨 Print / Screenshot</button>
+        <button onclick="document.getElementById('results-modal').style.display='none'"
+          style="font-family:'DM Mono',monospace; font-size:11px; letter-spacing:1px; text-transform:uppercase;
+          padding:10px 24px; border-radius:10px; background:transparent; border:1px solid #2a2a50;
+          color:#94a3b8; cursor:pointer;">✕ Close</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── QUIZ LOGIC ──────────────────────────────────────────
+let quizCorrect = 0;
+const quizTotal = 8;
+
+function answer(el, result, msg) {
+  const qItem = el.closest('.q-item');
+  if (qItem.dataset.answered) return;
+  qItem.dataset.answered = '1';
+
+  const choices = qItem.querySelectorAll('.choice');
+  choices.forEach(c => c.style.pointerEvents = 'none');
+
+  const fbIdx = [...document.querySelectorAll('.q-item')].indexOf(qItem);
+  const fb = document.getElementById('fb' + fbIdx);
+
+  if (result === 'correct') {
+    el.classList.add('correct');
+    fb.textContent = msg;
+    fb.className = 'feedback ok show';
+    quizCorrect++;
+  } else {
+    el.classList.add('wrong');
+    fb.textContent = msg;
+    fb.className = 'feedback no show';
+  }
+  document.getElementById('quiz-score').textContent = quizCorrect + '/' + quizTotal;
+}
+
+// ── MATCHING LOGIC ──────────────────────────────────────
+let matchSelected = {};
+let matchCount = 0;
+const matchTotal = 5;
+
+function matchClick(el) {
+  if (el.classList.contains('matched')) return;
+
+  const group = el.dataset.group;
+  const id = el.dataset.id;
+
+  // Deselect previous in same group
+  if (matchSelected[group] && matchSelected[group] !== el) {
+    matchSelected[group].classList.remove('selected');
+  }
+
+  if (el.classList.contains('selected')) {
+    el.classList.remove('selected');
+    delete matchSelected[group];
+    return;
+  }
+
+  el.classList.add('selected');
+  matchSelected[group] = el;
+
+  // Check for pair
+  if (matchSelected['karyotype'] && matchSelected['condition']) {
+    const k = matchSelected['karyotype'];
+    const c = matchSelected['condition'];
+
+    if (k.dataset.id === c.dataset.id) {
+      k.classList.remove('selected'); k.classList.add('matched'); k.style.pointerEvents = 'none';
+      c.classList.remove('selected'); c.classList.add('matched'); c.style.pointerEvents = 'none';
+      matchCount++;
+      document.getElementById('match-score-text').textContent = 'Matches: ' + matchCount + ' / ' + matchTotal;
+      document.getElementById('match-score-display').textContent = matchCount + '/' + matchTotal;
+    } else {
+      k.classList.add('wrong-flash'); c.classList.add('wrong-flash');
+      setTimeout(() => {
+        k.classList.remove('selected','wrong-flash');
+        c.classList.remove('selected','wrong-flash');
+      }, 400);
+    }
+    matchSelected = {};
+  }
+}
+
+// ── CASE REVEAL ──────────────────────────────────────────
+let casesSolved = 0;
+function revealCase(caseId, btn) {
+  const rev = document.getElementById('reveal-' + caseId);
+  if (!rev.classList.contains('show')) {
+    rev.classList.add('show');
+    btn.textContent = '✓ Revealed';
+    btn.style.borderColor = 'var(--accent4)';
+    btn.style.color = 'var(--accent4)';
+    btn.disabled = true;
+    casesSolved++;
+    document.getElementById('scenario-score').textContent = casesSolved + '/5';
+  }
+}
+
+// ── DRAG & DROP ORDER ────────────────────────────────────
+const CORRECT_ORDER = ['prophase1','metaphase1','anaphase1','telophase1','prophase2','metaphase2','anaphase2','telophase2'];
+
+let dragged = null;
+
+document.querySelectorAll('.stage-card').forEach(card => {
+  card.addEventListener('dragstart', () => {
+    dragged = card;
+    setTimeout(() => card.classList.add('dragging'), 0);
+  });
+  card.addEventListener('dragend', () => {
+    card.classList.remove('dragging');
+    dragged = null;
+  });
+  card.addEventListener('dragover', e => {
+    e.preventDefault();
+    if (dragged && dragged !== card) card.classList.add('drag-over');
+  });
+  card.addEventListener('dragleave', () => card.classList.remove('drag-over'));
+  card.addEventListener('drop', e => {
+    e.preventDefault();
+    card.classList.remove('drag-over');
+    if (dragged && dragged !== card) {
+      const grid = document.getElementById('stage-grid');
+      const cards = [...grid.querySelectorAll('.stage-card')];
+      const di = cards.indexOf(dragged);
+      const ci = cards.indexOf(card);
+      if (di < ci) {
+        grid.insertBefore(dragged, card.nextSibling);
+      } else {
+        grid.insertBefore(dragged, card);
+      }
+    }
+  });
+});
+
+let orderCorrect = false;
+
+function checkOrder() {
+  const grid = document.getElementById('stage-grid');
+  const current = [...grid.querySelectorAll('.stage-card')].map(c => c.dataset.stage);
+  const result = document.getElementById('order-result');
+  const correct = JSON.stringify(current) === JSON.stringify(CORRECT_ORDER);
+  orderCorrect = correct;
+
+  if (correct) {
+    result.textContent = '🎉 Perfect order! Prophase I → Metaphase I → Anaphase I → Telophase I → Prophase II → Metaphase II → Anaphase II → Telophase II';
+    result.className = 'order-result show win';
+  } else {
+    let wrongAt = current.findIndex((s, i) => s !== CORRECT_ORDER[i]);
+    result.textContent = `✗ Not quite. First error at position ${wrongAt + 1}. Hint: remember, Meiosis I separates homologs; Meiosis II separates sister chromatids. Try again!`;
+    result.className = 'order-result show lose';
+  }
+}
+
+function showResults() {
+  const name = document.getElementById('group-name').value.trim() || 'Unnamed Group';
+  document.getElementById('name-display').textContent = name;
+  document.getElementById('results-timestamp').textContent = new Date().toLocaleString();
+
+  document.getElementById('res-quiz').textContent = quizCorrect + ' / ' + quizTotal;
+  document.getElementById('res-match').textContent = matchCount + ' / ' + matchTotal + ' pairs matched';
+  document.getElementById('res-cases').textContent = casesSolved + ' / 5';
+  document.getElementById('res-order').textContent = orderCorrect ? '✓ Correct' : '✗ Incomplete';
+
+  const p1num = document.getElementById('prompt1-num').value;
+  const p2num = document.getElementById('prompt2-num').value;
+  const d1 = document.getElementById('disc1').value.trim();
+  const d2 = document.getElementById('disc2').value.trim();
+
+  const fmtDisc = (num, text, el) => {
+    el.innerHTML = text
+      ? `<div style="font-family:'DM Mono',monospace;font-size:10px;color:#f43f5e;letter-spacing:1px;margin-bottom:6px;">PROMPT ${num || '?'}</div>
+         <div style="font-size:0.88rem;color:#e2e8f0;line-height:1.7;">${text.replace(/\n/g,'<br>')}</div>`
+      : `<div style="font-size:0.82rem;color:#475569;font-style:italic;">No response recorded for Prompt ${num || '?'}.</div>`;
+  };
+
+  fmtDisc(p1num, d1, document.getElementById('res-disc1'));
+  fmtDisc(p2num, d2, document.getElementById('res-disc2'));
+
+  document.getElementById('results-modal').style.display = 'block';
+  document.getElementById('results-modal').scrollTop = 0;
+}
+</script>
+</body>
+</html>
