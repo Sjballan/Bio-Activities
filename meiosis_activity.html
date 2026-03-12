@@ -1170,6 +1170,7 @@ const CORRECT_ORDER = ['prophase1','metaphase1','anaphase1','telophase1','propha
 
 let dragged = null;
 
+// ── MOUSE DRAG (desktop) ─────────────────────────────────
 document.querySelectorAll('.stage-card').forEach(card => {
   card.addEventListener('dragstart', () => {
     dragged = card;
@@ -1198,6 +1199,88 @@ document.querySelectorAll('.stage-card').forEach(card => {
         grid.insertBefore(dragged, card);
       }
     }
+  });
+});
+
+// ── TOUCH DRAG (iPad / mobile) ───────────────────────────
+let touchDragged = null;
+let touchClone = null;
+let touchOffsetX = 0;
+let touchOffsetY = 0;
+
+function getCardAtPoint(x, y) {
+  // Temporarily hide clone so elementFromPoint can find cards underneath
+  if (touchClone) touchClone.style.display = 'none';
+  const el = document.elementFromPoint(x, y);
+  if (touchClone) touchClone.style.display = '';
+  if (!el) return null;
+  return el.closest('.stage-card');
+}
+
+document.querySelectorAll('.stage-card').forEach(card => {
+  card.addEventListener('touchstart', e => {
+    touchDragged = card;
+    const touch = e.touches[0];
+    const rect = card.getBoundingClientRect();
+    touchOffsetX = touch.clientX - rect.left;
+    touchOffsetY = touch.clientY - rect.top;
+
+    // Create a visual clone to drag around
+    touchClone = card.cloneNode(true);
+    touchClone.style.cssText = `
+      position: fixed;
+      width: ${rect.width}px;
+      opacity: 0.85;
+      pointer-events: none;
+      z-index: 9999;
+      left: ${touch.clientX - touchOffsetX}px;
+      top: ${touch.clientY - touchOffsetY}px;
+      transform: scale(1.05);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+      border-radius: 12px;
+    `;
+    document.body.appendChild(touchClone);
+    card.classList.add('dragging');
+    e.preventDefault();
+  }, { passive: false });
+
+  card.addEventListener('touchmove', e => {
+    if (!touchDragged || !touchClone) return;
+    const touch = e.touches[0];
+    touchClone.style.left = (touch.clientX - touchOffsetX) + 'px';
+    touchClone.style.top  = (touch.clientY - touchOffsetY) + 'px';
+
+    // Highlight card underneath
+    document.querySelectorAll('.stage-card').forEach(c => c.classList.remove('drag-over'));
+    const target = getCardAtPoint(touch.clientX, touch.clientY);
+    if (target && target !== touchDragged) target.classList.add('drag-over');
+    e.preventDefault();
+  }, { passive: false });
+
+  card.addEventListener('touchend', e => {
+    if (!touchDragged) return;
+    const touch = e.changedTouches[0];
+    const target = getCardAtPoint(touch.clientX, touch.clientY);
+
+    // Clean up clone and styles
+    if (touchClone) { touchClone.remove(); touchClone = null; }
+    document.querySelectorAll('.stage-card').forEach(c => {
+      c.classList.remove('dragging', 'drag-over');
+    });
+
+    // Swap into position
+    if (target && target !== touchDragged) {
+      const grid = document.getElementById('stage-grid');
+      const cards = [...grid.querySelectorAll('.stage-card')];
+      const di = cards.indexOf(touchDragged);
+      const ci = cards.indexOf(target);
+      if (di < ci) {
+        grid.insertBefore(touchDragged, target.nextSibling);
+      } else {
+        grid.insertBefore(touchDragged, target);
+      }
+    }
+    touchDragged = null;
   });
 });
 
